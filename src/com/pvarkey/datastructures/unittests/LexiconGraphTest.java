@@ -14,10 +14,10 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.pvarkey.datastructures.tst.HAMT;
-import com.pvarkey.datastructures.tst.ILexiconGraph;
-import com.pvarkey.datastructures.tst.TernarySearchTree2;
-import com.pvarkey.datastructures.tst.TernarySearchTree;
+import com.pvarkey.datastructures.lexicongraph.HAMT;
+import com.pvarkey.datastructures.lexicongraph.ILexiconGraph;
+import com.pvarkey.datastructures.lexicongraph.TernarySearchTree;
+import com.pvarkey.datastructures.lexicongraph.TernarySearchTree2;
 
 /**
  * @author pvarkey
@@ -26,7 +26,7 @@ import com.pvarkey.datastructures.tst.TernarySearchTree;
 public class LexiconGraphTest {
 
 	/**
-	 * Test method for {@link com.pvarkey.datastructures.tst.TernarySearchTree}.
+	 * Test method for {@link com.pvarkey.datastructures.lexicongraph.TernarySearchTree}.
 	 */
 	@Test
 	public void testContainsTernarySearchTree() {
@@ -36,7 +36,7 @@ public class LexiconGraphTest {
 
 	/**
 	 * Test method for
-	 * {@link com.pvarkey.datastructures.tst.TernarySearchTree#ingestLexicon(String, boolean)}
+	 * {@link com.pvarkey.datastructures.lexicongraph.TernarySearchTree#ingestLexicon(String, boolean)}
 	 * .
 	 */
 	@Test

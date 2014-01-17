@@ -1,4 +1,4 @@
-package com.pvarkey.datastructures.tst;
+package com.pvarkey.datastructures.lexicongraph;
 
 import java.io.BufferedReader;
 import java.io.File;
