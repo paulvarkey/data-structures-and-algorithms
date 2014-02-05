@@ -2,6 +2,8 @@ package com.pvarkey.datastructures.lexicongraph;
 
 public class HAMT extends AbstractLexiconGraph implements ILexiconGraph {
 	
+	final static int W = 5;
+	
 	short indexExtractorCode = 0b11111;
 	short indexExtractorShift = 0;
 	int mask = 0;
@@ -19,49 +21,46 @@ public class HAMT extends AbstractLexiconGraph implements ILexiconGraph {
 			
 		if (s == null || s == "") throw new IllegalArgumentException();
 		
-		lexiconSize++;
+		int maskIndex = (s.hashCode() & (indexExtractorCode << indexExtractorShift)) >>> indexExtractorShift;
+		// the following from Prokopec, et al. (2011) is more efficient
+		// int maskIndex = (s.hashCode() >>> indexExtractorShift) & indexExtractorCode;
 		
-		/*if (amt == null) {
-			int maskIndex = (s.hashCode() & (indexExtractorCode << indexExtractorShift)) >>> indexExtractorShift;
-			mask = mask | (1 << maskIndex);
-			extendAmt(getAmtIndex(maskIndex), s); // assert equals extendAmt(0, s) // assert equals amt[0] = s
+		// is mask set at index?
+		boolean isSet = ((mask & (1 << maskIndex)) != 0);
+		
+		// if there is collision with *another* string, 
+		// chain until next free slot OR sub-HAMT OR non-colliding string
+		while(isSet && (amt[getAmtIndex(maskIndex)] instanceof String)
+					&& (amt[getAmtIndex(maskIndex)].hashCode() == s.hashCode())) {
+			// if current string is already present, return
+			if (s.equals((String)amt[getAmtIndex(maskIndex)])) 
+				return;
+			maskIndex = (maskIndex + 1) % 32;
+			isSet = ((mask & (1 << maskIndex)) != 0);
 		}
+		
+		// set mask at index and proceed
+		mask = mask | (1 << maskIndex);
+		
+		if(!isSet)
+			amt = Utilities.insertAtIndex(amt, getAmtIndex(maskIndex), s);
 		else
-		{*/
-			int maskIndex = (s.hashCode() & (indexExtractorCode << indexExtractorShift)) >>> indexExtractorShift;
-			
-			// is mask set at index?
-			boolean isSet = ((mask & (1 << maskIndex)) != 0);
-			
-			// if there is collision with another string, 
-			// chain until next free slot OR sub-HAMT OR non-colliding string
-			while(isSet && (amt[getAmtIndex(maskIndex)] instanceof String)
-						&& (amt[getAmtIndex(maskIndex)].hashCode() == s.hashCode())) {
-				maskIndex = (maskIndex + 1) % 32;
-				isSet = ((mask & (1 << maskIndex)) != 0);
-			}
-			
-			// set mask at index and proceed
-			mask = mask | (1 << maskIndex);
-			
-			if(!isSet)
-				extendAmt(getAmtIndex(maskIndex), s);
-			else
+		{
+			if (amt[getAmtIndex(maskIndex)] instanceof String)
 			{
-				if (amt[getAmtIndex(maskIndex)] instanceof String)
-				{
-					HAMT subHAMT = new HAMT(indexExtractorCode, (short) (indexExtractorShift + 5));
-					subHAMT.add((String)amt[getAmtIndex(maskIndex)]);
-					subHAMT.add(s);
-					amt[getAmtIndex(maskIndex)] = subHAMT;
-				}
-				else // (amt[getAmtIndex(maskIndex)] instanceof HAMT)
-				{
-					HAMT subHAMT = (HAMT)amt[getAmtIndex(maskIndex)];
-					subHAMT.add(s);
-				}
+				HAMT subHAMT = new HAMT(indexExtractorCode, (short) (indexExtractorShift + W));
+				subHAMT.add((String)amt[getAmtIndex(maskIndex)]);
+				subHAMT.add(s);
+				amt[getAmtIndex(maskIndex)] = subHAMT;
 			}
-		/*}*/
+			else // (amt[getAmtIndex(maskIndex)] instanceof HAMT)
+			{
+				HAMT subHAMT = (HAMT)amt[getAmtIndex(maskIndex)];
+				subHAMT.add(s);
+			}
+		}
+		
+		lexiconSize++;
 	}
 
 	@Override
@@ -111,27 +110,14 @@ public class HAMT extends AbstractLexiconGraph implements ILexiconGraph {
 		lexiconSize = 0;
 	}
 	
-	private <T> void extendAmt(int index, T o) {
-		if(amt == null) {
-			amt = new Object[index+1];
-			amt[index] = o;
-			return;
-		}
-		Object[] newAmt = new Object[amt.length + 1];
-		for (int i = 0; i < index; i++)
-			newAmt[i] = amt[i];
-		newAmt[index] = o;
-		for (int i = index+1; i < newAmt.length; i++)
-			newAmt[i] = amt[i-1];
-		amt = newAmt;
-	}
-	
 	private int getAmtIndex(int maskIndex) {
 		int amtIndex = -1;
 		for(int i = maskIndex; i >= 0; i--)
 			if ((mask & (1 << i)) != 0)
 				amtIndex++;
 		return amtIndex;
+		// the following from Prokopec, et al. (2011) may be more efficient?
+		// return Integer.bitCount(((1 << (maskIndex + 1)) - 1) & mask) - 1;
 	}
 
 }

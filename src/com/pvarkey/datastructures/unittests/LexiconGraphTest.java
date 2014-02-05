@@ -14,6 +14,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.pvarkey.datastructures.lexicongraph.CTrie;
 import com.pvarkey.datastructures.lexicongraph.HAMT;
 import com.pvarkey.datastructures.lexicongraph.ILexiconGraph;
 import com.pvarkey.datastructures.lexicongraph.TernarySearchTree;
@@ -25,26 +26,17 @@ import com.pvarkey.datastructures.lexicongraph.TernarySearchTree2;
  */
 public class LexiconGraphTest {
 
-	/**
-	 * Test method for {@link com.pvarkey.datastructures.lexicongraph.TernarySearchTree}.
-	 */
 	@Test
 	public void testContainsTernarySearchTree() {
 		ILexiconGraph ternarySearchTree = new TernarySearchTree();
 		testContains(ternarySearchTree);
 	}
 
-	/**
-	 * Test method for
-	 * {@link com.pvarkey.datastructures.lexicongraph.TernarySearchTree#ingestLexicon(String, boolean)}
-	 * .
-	 */
 	@Test
 	public void testIngestLexiconTernarySearchTree() {
 		TernarySearchTree ternarySearchTree = new TernarySearchTree();
 		testIngestLexicon(ternarySearchTree);
 	}
-	
 	
 	@Test
 	public void testContainsTernarySearchTree2() {
@@ -58,6 +50,11 @@ public class LexiconGraphTest {
 		testIngestLexicon(optimized2TernarySearchTree);
 	}
 	
+	@Test
+	public void testAddHAMT() {
+		HAMT hamt = new HAMT((short)0b11111, (short)0);
+		testAdd(hamt);
+	}
 	
 	@Test
 	public void testIngestLexiconHAMT() {
@@ -65,6 +62,17 @@ public class LexiconGraphTest {
 		testIngestLexicon(hamt);
 	}
 	
+	@Test
+	public void testAddLexiconCTrie() {
+		CTrie ctrie = new CTrie();
+		testAdd(ctrie);
+	}
+	
+	@Test
+	public void testIngestLexiconCTrie() {
+		CTrie ctrie = new CTrie();
+		testIngestLexicon(ctrie);
+	}
 	
 	private <T extends ILexiconGraph> void testIngestLexicon(T concreteLexiconGraph)
 	{
@@ -94,47 +102,65 @@ public class LexiconGraphTest {
 			assertFalse(concreteLexiconGraph.contains(wordNotInLexicon));
 	}
 	
-	private <T extends ILexiconGraph> void testContains(T ternarySearchTree)
+	private <T extends ILexiconGraph> void testContains(T lexiconGraph)
 	{
-		assertFalse(ternarySearchTree.contains(null));
+		assertFalse(lexiconGraph.contains(null));
 
-		ternarySearchTree.add("Tree");
-		assertTrue(ternarySearchTree.contains("Tree"));
-		assertFalse(ternarySearchTree.contains("Trie"));
-		assertFalse(ternarySearchTree.contains("Tried"));
+		lexiconGraph.add("Tree");
+		assertTrue(lexiconGraph.contains("Tree"));
+		assertFalse(lexiconGraph.contains("Trie"));
+		assertFalse(lexiconGraph.contains("Tried"));
 
-		ternarySearchTree.add("Trie");
-		assertTrue(ternarySearchTree.contains("Tree"));
-		assertTrue(ternarySearchTree.contains("Trie"));
-		assertFalse(ternarySearchTree.contains("Tried"));
+		lexiconGraph.add("Trie");
+		assertTrue(lexiconGraph.contains("Tree"));
+		assertTrue(lexiconGraph.contains("Trie"));
+		assertFalse(lexiconGraph.contains("Tried"));
 		
-		assertFalse(ternarySearchTree.contains("cute"));
-		ternarySearchTree.add("cute");
-		assertTrue(ternarySearchTree.contains("cute"));
+		assertFalse(lexiconGraph.contains("cute"));
+		lexiconGraph.add("cute");
+		assertTrue(lexiconGraph.contains("cute"));
 		
-		assertFalse(ternarySearchTree.contains("at"));
-		ternarySearchTree.add("at");
-		assertTrue(ternarySearchTree.contains("cute"));
-		assertTrue(ternarySearchTree.contains("at"));
+		assertFalse(lexiconGraph.contains("at"));
+		lexiconGraph.add("at");
+		assertTrue(lexiconGraph.contains("cute"));
+		assertTrue(lexiconGraph.contains("at"));
 		
-		assertFalse(ternarySearchTree.contains("as"));
-		ternarySearchTree.add("as");
-		assertTrue(ternarySearchTree.contains("as"));
+		assertFalse(lexiconGraph.contains("as"));
+		lexiconGraph.add("as");
+		assertTrue(lexiconGraph.contains("as"));
 		
-		assertFalse(ternarySearchTree.contains("cup"));
-		assertFalse(ternarySearchTree.contains("he"));
-		assertFalse(ternarySearchTree.contains("us"));
-		assertFalse(ternarySearchTree.contains("i"));
+		assertFalse(lexiconGraph.contains("cup"));
+		assertFalse(lexiconGraph.contains("he"));
+		assertFalse(lexiconGraph.contains("us"));
+		assertFalse(lexiconGraph.contains("i"));
 		
-		ternarySearchTree.add("cup");
-		ternarySearchTree.add("he");
-		ternarySearchTree.add("us");
-		ternarySearchTree.add("i");
+		lexiconGraph.add("cup");
+		lexiconGraph.add("he");
+		lexiconGraph.add("us");
+		lexiconGraph.add("i");
 
-		assertTrue(ternarySearchTree.contains("cup"));
-		assertTrue(ternarySearchTree.contains("he"));
-		assertTrue(ternarySearchTree.contains("us"));
-		assertTrue(ternarySearchTree.contains("i"));
+		assertTrue(lexiconGraph.contains("cup"));
+		assertTrue(lexiconGraph.contains("he"));
+		assertTrue(lexiconGraph.contains("us"));
+		assertTrue(lexiconGraph.contains("i"));
+	}
+	
+	private <T extends ILexiconGraph> void testAdd(T lexiconGraph)
+	{
+		assertTrue(lexiconGraph.size() == 0);
+		assertFalse(lexiconGraph.contains("first"));
+		
+		lexiconGraph.add("first");
+		assertTrue(lexiconGraph.size() == 1);
+		assertTrue(lexiconGraph.contains("first"));
+		
+		lexiconGraph.add("first");
+		assertTrue(lexiconGraph.size() == 1);
+		assertTrue(lexiconGraph.contains("first"));
+		
+		lexiconGraph.add("second");
+		assertTrue(lexiconGraph.size() == 2);
+		assertTrue(lexiconGraph.contains("second"));
 	}
 }
 
