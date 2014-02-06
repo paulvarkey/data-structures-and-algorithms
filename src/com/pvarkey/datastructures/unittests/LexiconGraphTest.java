@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -30,7 +31,7 @@ import com.pvarkey.datastructures.lexicongraph.TernarySearchTree2;
  */
 public class LexiconGraphTest {
 	
-	static int Nth = 3;
+	static int Nth = 13;
 	static String lexiconFileName = "data/Word-List.txt";
 	static String[] wordsInLexicon = {"AARDVARK", "REDEFINES"};
 	static String[] wordsNotInLexicon = {"KJAJKDBJKSDBDJHAJDASJDBHA"};
@@ -154,7 +155,7 @@ public class LexiconGraphTest {
 		// first, ingest lexicon
 		concreteLexiconGraph.ingestLexicon(lexiconFileName, true);
 		
-		long start = System.nanoTime(); 
+		HashSet<String> NthWords = new HashSet<String>(10000);
 		
 		try(BufferedReader br = new BufferedReader(new FileReader(lexicon))) {
 			br.readLine(); // skip first line -- it contains the count of the number of words
@@ -162,10 +163,16 @@ public class LexiconGraphTest {
 		    for(String line; (line = br.readLine()) != null; ) {
 		    	i = (++i)%N;
 		    	if (i == 0)
-		    		assertTrue(concreteLexiconGraph.contains(line.trim()));
+		    		NthWords.add(line.trim());
 		    }
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		long start = System.nanoTime(); 
+		
+		for (String word : NthWords) {
+    		assertTrue(concreteLexiconGraph.contains(word));
 		}
 		
 		double elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;

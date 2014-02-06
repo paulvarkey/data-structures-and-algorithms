@@ -16,22 +16,22 @@ The following tests were performed using the following hardware/software :
 
 Time/space characteristics for complete ingestion of a sample lexicon containing 178691 words :
 
-| Method | Time (in seconds) | Memory Footprint |
-|:--------|:-------------------|:------------------|
-| [Ternary Search Tree](https://en.wikipedia.org/wiki/Ternary_search_tree) (direct implementation) | 0.07 | 12.1 MB |
+| Method | Time with I/O (in seconds) | Time without I/O (in seconds) | Memory Footprint |
+|:--------|:-------------------|:-------------------|:------------------|
+| [Ternary Search Tree](https://en.wikipedia.org/wiki/Ternary_search_tree) (direct implementation) | 0.07 | 0.07 | 12.1 MB |
 | Ternary Search Tree (using array-based maps) | 0.45 | 27.6 MB |
-| [Hash Array Mapped Trie](https://en.wikipedia.org/wiki/Hash_array_mapped_trie) | 0.18 | 13.4 MB |
-| [CTrie](https://en.wikipedia.org/wiki/Ctrie) (Concurrent Hash Trie)<sup>a</sup> | 0.11<sup>b</sup> | 19 MB |
+| [Hash Array Mapped Trie](https://en.wikipedia.org/wiki/Hash_array_mapped_trie) | 0.18 | 0.15 | 13.4 MB |
+| [CTrie](https://en.wikipedia.org/wiki/Ctrie) (Concurrent Hash Trie)<sup>a</sup> | 0.11<sup>b</sup> | 0.09 | 19 MB |
 
 
 Running time for Nth word containment test from the same lexicon (after ingestion) :
 
 | Method | Time (in seconds) | 
 |:--------|:-------------------|
-| Ternary Search Tree (direct implementation) | 0.03 |
+| Ternary Search Tree (direct implementation) | 0.01 |
 | Ternary Search Tree (using array-based maps) | <i>failed</i> |
-| Hash Array Mapped Trie | 0.05 |
-| CTrie | 0.03<sup>b</sup> |
+| Hash Array Mapped Trie | 0.02 |
+| CTrie | 0.01<sup>b</sup> |
 
 ___
 <sup>a</sup> CTries are concurrent, lock-free versions of Hash Array Mapped Tries.  
