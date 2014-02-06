@@ -21,6 +21,6 @@ Time/space characteristics for complete ingestion of a sample lexicon containing
 | [Ternary Search Tree](https://en.wikipedia.org/wiki/Ternary_search_tree) (direct implementation) | 0.093968271 | 12.1 MB |
 | Ternary Search Tree (using array-based maps) | 0.514310877 | 27.6 MB |
 | [Hash Array Mapped Trie](https://en.wikipedia.org/wiki/Hash_array_mapped_trie) | 0.212815164 | 13.4 MB |
-| [CTrie](https://en.wikipedia.org/wiki/Ctrie) (Concurrent Hash Trie)<sup>1</sup> | 0.150503307<sup>2</sup> | 19 MB |
-<sup>1</sup> CTries are concurrent, lock-free versions of Hash Array Mapped Tries.  
-<sup>2</sup> Ingestion was performed sequentially
+| [CTrie](https://en.wikipedia.org/wiki/Ctrie) (Concurrent Hash Trie)<sup>a</sup> | 0.150503307<sup>b</sup> | 19 MB |
+<sup>a</sup> CTries are concurrent, lock-free versions of Hash Array Mapped Tries.  
+<sup>b</sup> Ingestion was performed sequentially (i.e. no concurrency was used)
