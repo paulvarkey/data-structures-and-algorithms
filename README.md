@@ -25,7 +25,7 @@ Time/space characteristics for complete ingestion of a sample lexicon containing
 <sup>a</sup> CTries are concurrent, lock-free versions of Hash Array Mapped Tries.  
 <sup>b</sup> Ingestion was performed sequentially (i.e. no concurrency was used)
 
-Running time for 7th word containment test from the same lexicon (after ingestion) :
+Running time for Nth word containment test from the same lexicon (after ingestion) :
 
 | Method | Time (in seconds) | 
 |:--------|:-------------------|
