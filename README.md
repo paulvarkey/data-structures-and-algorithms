@@ -9,9 +9,9 @@ LexiconGraph
 A package containing implementations of various ways of storing lexicons for fast access, update and removal.
 
 The following tests were performed using the following hardware/software :  
-1. Intel Xeon E31230 (4 core) @ 3.2 GHz machine with 8 GB RAM 
-2. Windows 7 Enterprise 64-bit OS 
-3. Eclipse Java EE IDE (version: Juno Service Release 2) 
+1. Intel Xeon E31230 (4 core) @ 3.2 GHz machine with 8 GB RAM  
+2. Windows 7 Enterprise 64-bit OS  
+3. Eclipse Java EE IDE (version: Juno Service Release 2)  
 4. Eclipse Memory Analyzer Version 1.3.0 
 
 Time/space characteristics for complete ingestion of a sample lexicon containing 178691 words :
