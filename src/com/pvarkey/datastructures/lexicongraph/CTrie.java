@@ -1,5 +1,6 @@
 package com.pvarkey.datastructures.lexicongraph;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.*;
 
 import junit.framework.Assert;
@@ -26,8 +27,8 @@ public class CTrie extends AbstractLexiconGraph implements ILexiconGraph {
 		INode r = root.get();
 		if (r == null || isNullINode(r)) {
 			SNode sSNode = new SNode(s, false);
-			int maskIndex = (s.hashCode() >> 0) & ((1 << W) - 1);
-			int amtIndex = 0; // = Integer.bitCount(((1 << (maskIndex + 1)) - 1) & (1 << maskIndex)) - 1;
+			int maskIndex = (s.hashCode() >>> 0) & ((1 << W) - 1);
+			int amtIndex = 0; // = Integer.bitCount((~0 >>> (32-maskIndex-1)) & (1 << maskIndex)) - 1;
 			Object[] amt = new Object[amtIndex + 1];
 			amt[amtIndex] = sSNode;
 			CNode sCNode = new CNode(1 << maskIndex, amt);
@@ -65,10 +66,10 @@ public class CTrie extends AbstractLexiconGraph implements ILexiconGraph {
 				Assert.fail("No execution path must reach this point");
 		}
 		else if (mainNode instanceof CNode) {
-			int maskIndex = (s.hashCode() >> level) & ((1 << W) - 1);
+			int maskIndex = (s.hashCode() >>> level) & ((1 << W) - 1);
 			CNode mainNodeAsCNode = ((CNode) mainNode);
 			int newMask = mainNodeAsCNode.mask | (1 << maskIndex);
-			int amtIndex = Integer.bitCount(((1 << (maskIndex + 1)) - 1) & newMask) - 1;
+			int amtIndex = Integer.bitCount((~0 >>> (32-maskIndex-1)) & newMask) - 1;
 			SNode sSNode = new SNode(s, false);
 			
 			if ((mainNodeAsCNode.mask & (1 << maskIndex)) == 0) {
@@ -82,23 +83,43 @@ public class CTrie extends AbstractLexiconGraph implements ILexiconGraph {
 					if (sNodeAtAmtIndex.k.equals(s))
 						return false;
 					else {
-						int cNodeMask = 0;
-						Object[] amt = new Object[2];
+						// TODO: if collision at last level (i.e. level == 30), then, chain, unless full
+						if (level + W >= 32) {
+							if (mainNodeAsCNode.amt.length == 32) // it's full -- tough luck!
+								return false; // throw RareErrorException instead?
+							boolean isSet = ((mainNodeAsCNode.mask & (1 << maskIndex)) != 0);
+							while(isSet) {
+								maskIndex = (maskIndex + 1) % 32;
+								isSet = ((mainNodeAsCNode.mask & (1 << maskIndex)) != 0);
+								newMask = mainNodeAsCNode.mask | (1 << maskIndex);
+								amtIndex = Integer.bitCount((~0 >>> (32-maskIndex-1)) & newMask) - 1;
+								Object[] amt = Utilities.insertAtIndex(mainNodeAsCNode.amt, amtIndex, sSNode);
+								CNode sCNode = new CNode(newMask, amt);
+								return i.MainNode.compareAndSet(mainNode, sCNode);
+							}
+						}
+//						int cNodeMask = 0;
+//						Object[] amt = new Object[2];
 						
-						maskIndex = (sNodeAtAmtIndex.k.hashCode() >> (level + W)) & ((1 << W) - 1);
-						cNodeMask |= (1 << maskIndex);
-						amtIndex = 0; // = Integer.bitCount(((1 << (maskIndex + 1)) - 1) & cNodeMask) - 1;
-						amt[amtIndex] = sNodeAtAmtIndex;
+//						maskIndex = (sNodeAtAmtIndex.k.hashCode() >>> (level + W)) & ((1 << W) - 1);
+//						cNodeMask |= (1 << maskIndex);
+//						amtIndex = 0; // = Integer.bitCount((~0 >>> (32-maskIndex-1)) & cNodeMask) - 1;
+//						amt[amtIndex] = sNodeAtAmtIndex;
+//						maskIndex = (sSNode.k.hashCode() >>> (level + W)) & ((1 << W) - 1);
+//						cNodeMask |= (1 << maskIndex);
+//						amtIndex = 1; // = Integer.bitCount((~0 >>> (32-maskIndex-1)) & cNodeMask) - 1;
+//						amt[amtIndex] = sSNode;
+//						CNode sCNode = new CNode(cNodeMask, amt);
+//						INode sINode = new INode(sCNode);
+//						
 						
-						maskIndex = (sSNode.k.hashCode() >> (level + W)) & ((1 << W) - 1);
-						cNodeMask |= (1 << maskIndex);
-						amtIndex = 1; // = Integer.bitCount(((1 << (maskIndex + 1)) - 1) & cNodeMask) - 1;
-						amt[amtIndex] = sSNode;
+						CNode nCNode = new CNode(0, null);
+						INode nINode = new INode(nCNode);
+						iadd(nINode, sNodeAtAmtIndex.k, level + W, i);
+						iadd(nINode, sSNode.k, level + W, i);
 						
-						CNode sCNode = new CNode(cNodeMask, amt);
-						INode sINode = new INode(sCNode);
-						CNode mainNodeAsCNodeCopy = new CNode(mainNodeAsCNode.mask, mainNodeAsCNode.amt);
-						mainNodeAsCNodeCopy.amt[amtIndex] = sINode;
+						CNode mainNodeAsCNodeCopy = new CNode(mainNodeAsCNode.mask, Arrays.copyOf(mainNodeAsCNode.amt, mainNodeAsCNode.amt.length));
+						mainNodeAsCNodeCopy.amt[amtIndex] = nINode;
 						return i.MainNode.compareAndSet(mainNode, mainNodeAsCNodeCopy);
 					}
 				}
@@ -153,14 +174,24 @@ public class CTrie extends AbstractLexiconGraph implements ILexiconGraph {
 				Assert.fail("No execution path must reach this point");
 		}
 		else if (mainNode instanceof CNode) {
-			int maskIndex = (s.hashCode() >> level) & ((1 << W) - 1);
+			// if last level, then it may have chained elements (from collisions), 
+			// therefore, search whole array
+			if (level + W >= 32) {
+				for (Object sNode : ((CNode) mainNode).amt) {
+					if(((SNode) sNode).k.equals(s))
+						return true;
+				}
+				return false;
+			}
+			
+			int maskIndex = (s.hashCode() >>> level) & ((1 << W) - 1);
 			
 			CNode mainNodeAsCNode = ((CNode) mainNode);
 			
 			if ((mainNodeAsCNode.mask & (1 << maskIndex)) == 0)
 				return false;
 						
-			int amtIndex = Integer.bitCount(((1 << (maskIndex + 1)) - 1) & mainNodeAsCNode.mask) - 1;
+			int amtIndex = Integer.bitCount((~0 >>> (32-maskIndex-1)) & mainNodeAsCNode.mask) - 1;
 			
 			if (mainNodeAsCNode.amt[amtIndex] instanceof SNode) {
 				SNode sNodeAtAmtIndex = (SNode) mainNodeAsCNode.amt[amtIndex];

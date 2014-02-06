@@ -96,10 +96,12 @@ public class LexiconGraphTest {
 		// else
 		concreteLexiconGraph.ingestLexicon(lexiconFileName, true);
 		
-		for(String wordInLexicon : wordsInLexicon)
+		for(String wordInLexicon : wordsInLexicon) {
 			assertTrue(concreteLexiconGraph.contains(wordInLexicon));
-		for(String wordNotInLexicon : wordsNotInLexicon)
+		}
+		for(String wordNotInLexicon : wordsNotInLexicon) {
 			assertFalse(concreteLexiconGraph.contains(wordNotInLexicon));
+		}
 	}
 	
 	private <T extends ILexiconGraph> void testContains(T lexiconGraph)
