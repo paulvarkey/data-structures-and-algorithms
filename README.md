@@ -8,7 +8,7 @@ LexiconGraph
 
 A package containing implementations of various ways of storing lexicons for fast access, update and removal.
 
-For a sample lexicon containing 178691 words, the following results were obtained :
+Time/space characteristics for complete ingestion of a sample lexicon containing 178691 words :
 
 | Method | Time (in seconds) | Memory Footprint |
 |:--------|:-------------------|:------------------|
