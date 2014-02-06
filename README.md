@@ -19,9 +19,9 @@ Time/space characteristics for complete ingestion of a sample lexicon containing
 | Method | Time with I/O (in seconds) | Time without I/O (in seconds) | Memory Footprint |
 |:--------|:-------------------|:-------------------|:------------------|
 | [Ternary Search Tree](https://en.wikipedia.org/wiki/Ternary_search_tree) (direct implementation) | 0.07 | 0.07 | 12.1 MB |
-| Ternary Search Tree (using array-based maps) | 0.45 | 27.6 MB |
+| Ternary Search Tree (using array-based maps) | 0.45 | 0.5 | 27.6 MB |
 | [Hash Array Mapped Trie](https://en.wikipedia.org/wiki/Hash_array_mapped_trie) | 0.18 | 0.15 | 13.4 MB |
-| [CTrie](https://en.wikipedia.org/wiki/Ctrie) (Concurrent Hash Trie)<sup>a</sup> | 0.11<sup>b</sup> | 0.09 | 19 MB |
+| [CTrie](https://en.wikipedia.org/wiki/Ctrie) (Concurrent Hash Trie)<sup>a</sup> | 0.11<sup>b</sup> | 0.09<sup>b</sup> | 19 MB |
 
 
 Running time for Nth word containment test from the same lexicon (after ingestion) :
