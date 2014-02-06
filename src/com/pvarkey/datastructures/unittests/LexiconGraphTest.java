@@ -5,7 +5,10 @@ package com.pvarkey.datastructures.unittests;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +39,13 @@ public class LexiconGraphTest {
 	public void testIngestLexiconTernarySearchTree() {
 		TernarySearchTree ternarySearchTree = new TernarySearchTree();
 		testIngestLexicon(ternarySearchTree);
+		System.out.println();
+	}
+	
+	@Test
+	public void performanceTestContainsNthFromLexiconTernarySearchTree() {
+		TernarySearchTree ternarySearchTree = new TernarySearchTree();
+		performanceTestContainsNthFromLexicon(ternarySearchTree,7);
 	}
 	
 	@Test
@@ -48,6 +58,13 @@ public class LexiconGraphTest {
 	public void testIngestLexiconOptimized2TernarySearchTree() {
 		TernarySearchTree2 optimized2TernarySearchTree = new TernarySearchTree2();
 		testIngestLexicon(optimized2TernarySearchTree);
+		System.out.println();
+	}
+	
+	@Test
+	public void performanceTestContainsNthFromLexiconOptimized2TernarySearchTree() {
+		TernarySearchTree2 optimized2TernarySearchTree = new TernarySearchTree2();
+		performanceTestContainsNthFromLexicon(optimized2TernarySearchTree,7);
 	}
 	
 	@Test
@@ -60,6 +77,13 @@ public class LexiconGraphTest {
 	public void testIngestLexiconHAMT() {
 		HAMT hamt = new HAMT((short)0b11111, (short)0);
 		testIngestLexicon(hamt);
+		System.out.println();
+	}
+	
+	@Test
+	public void performanceTestContainsNthFromLexiconHAMT() {
+		HAMT hamt = new HAMT((short)0b11111, (short)0);
+		performanceTestContainsNthFromLexicon(hamt,7);
 	}
 	
 	@Test
@@ -72,6 +96,13 @@ public class LexiconGraphTest {
 	public void testIngestLexiconCTrie() {
 		CTrie ctrie = new CTrie();
 		testIngestLexicon(ctrie);
+		System.out.println();
+	}
+	
+	@Test
+	public void performanceTestContainsNthFromLexiconCTrie() {
+		CTrie ctrie = new CTrie();
+		performanceTestContainsNthFromLexicon(ctrie,7);
 	}
 	
 	private <T extends ILexiconGraph> void testIngestLexicon(T concreteLexiconGraph)
@@ -102,6 +133,39 @@ public class LexiconGraphTest {
 		for(String wordNotInLexicon : wordsNotInLexicon) {
 			assertFalse(concreteLexiconGraph.contains(wordNotInLexicon));
 		}
+	}
+	
+	private <T extends ILexiconGraph> void performanceTestContainsNthFromLexicon(T concreteLexiconGraph, int N)
+	{
+		String lexiconFileName = "data/Word-List.txt";
+			
+		if(lexiconFileName == null || lexiconFileName.isEmpty())
+			throw new IllegalArgumentException("Lexicon filename cannot be null or empty!");
+	
+		File lexicon = new File(lexiconFileName);
+		if (!lexicon.isFile() || !lexicon.canRead())
+			throw new IllegalArgumentException("Lexicon file does not exist or is unreadable!");
+		
+		// first, ingest lexicon
+		concreteLexiconGraph.ingestLexicon(lexiconFileName, true);
+		
+		long start = System.nanoTime(); 
+		
+		try(BufferedReader br = new BufferedReader(new FileReader(lexicon))) {
+			br.readLine(); // skip first line -- it contains the count of the number of words
+			int i = 0;
+		    for(String line; (line = br.readLine()) != null; ) {
+		    	i = (++i)%N;
+		    	if (i == 0)
+		    		assertTrue(concreteLexiconGraph.contains(line.trim()));
+		    }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		double elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
+		
+		System.out.println(concreteLexiconGraph.getClass().getSimpleName() + " took "  + elapsedTimeInSec + " seconds for " + N + "th word containment test from lexicon.");
 	}
 	
 	private <T extends ILexiconGraph> void testContains(T lexiconGraph)

@@ -31,7 +31,6 @@ public abstract class AbstractLexiconGraph implements ILexiconGraph
 			e.printStackTrace();
 		}
 		
-		// Segment to monitor
 		double elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
 		
 		System.out.println(this.getClass().getSimpleName() + " took "  + elapsedTimeInSec + " seconds to ingest " + size() + " lexicon entries.");
