@@ -31,7 +31,7 @@ Running time for Nth word containment test from the same lexicon (after ingestio
 | Ternary Search Tree (direct implementation) | 0.03 |
 | Ternary Search Tree (using array-based maps) | <i>failed</i> |
 | Hash Array Mapped Trie | 0.05 |
-| CTrie | 0.03<sup<b</sup> |
+| CTrie | 0.03<sup>b</sup> |
 
 ___
 <sup>a</sup> CTries are concurrent, lock-free versions of Hash Array Mapped Tries.  
