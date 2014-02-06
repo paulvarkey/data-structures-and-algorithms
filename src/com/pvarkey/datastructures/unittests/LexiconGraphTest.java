@@ -15,6 +15,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.pvarkey.datastructures.lexicongraph.CTrie;
@@ -28,6 +29,16 @@ import com.pvarkey.datastructures.lexicongraph.TernarySearchTree2;
  * 
  */
 public class LexiconGraphTest {
+	
+	static int Nth = 3;
+	static String lexiconFileName = "data/Word-List.txt";
+	static String[] wordsInLexicon = {"AARDVARK", "REDEFINES"};
+	static String[] wordsNotInLexicon = {"KJAJKDBJKSDBDJHAJDASJDBHA"};
+	
+	@BeforeClass 
+	public static void initializeTestParametersHere() {
+
+	}
 
 	@Test
 	public void testContainsTernarySearchTree() {
@@ -45,7 +56,7 @@ public class LexiconGraphTest {
 	@Test
 	public void performanceTestContainsNthFromLexiconTernarySearchTree() {
 		TernarySearchTree ternarySearchTree = new TernarySearchTree();
-		performanceTestContainsNthFromLexicon(ternarySearchTree,7);
+		performanceTestContainsNthFromLexicon(ternarySearchTree,Nth);
 	}
 	
 	@Test
@@ -64,7 +75,7 @@ public class LexiconGraphTest {
 	@Test
 	public void performanceTestContainsNthFromLexiconOptimized2TernarySearchTree() {
 		TernarySearchTree2 optimized2TernarySearchTree = new TernarySearchTree2();
-		performanceTestContainsNthFromLexicon(optimized2TernarySearchTree,7);
+		performanceTestContainsNthFromLexicon(optimized2TernarySearchTree,Nth);
 	}
 	
 	@Test
@@ -83,7 +94,7 @@ public class LexiconGraphTest {
 	@Test
 	public void performanceTestContainsNthFromLexiconHAMT() {
 		HAMT hamt = new HAMT((short)0b11111, (short)0);
-		performanceTestContainsNthFromLexicon(hamt,7);
+		performanceTestContainsNthFromLexicon(hamt,Nth);
 	}
 	
 	@Test
@@ -102,15 +113,11 @@ public class LexiconGraphTest {
 	@Test
 	public void performanceTestContainsNthFromLexiconCTrie() {
 		CTrie ctrie = new CTrie();
-		performanceTestContainsNthFromLexicon(ctrie,7);
+		performanceTestContainsNthFromLexicon(ctrie,Nth);
 	}
 	
 	private <T extends ILexiconGraph> void testIngestLexicon(T concreteLexiconGraph)
 	{
-		String lexiconFileName = "data/Word-List.txt";
-		String[] wordsInLexicon = {"AARDVARK", "REDEFINES"};
-		String[] wordsNotInLexicon = {"KJAJKDBJKSDBDJHAJDASJDBHA"};
-
 		for(String wordInLexicon : wordsInLexicon)
 			assertFalse(concreteLexiconGraph.contains(wordInLexicon));
 
@@ -136,9 +143,7 @@ public class LexiconGraphTest {
 	}
 	
 	private <T extends ILexiconGraph> void performanceTestContainsNthFromLexicon(T concreteLexiconGraph, int N)
-	{
-		String lexiconFileName = "data/Word-List.txt";
-			
+	{			
 		if(lexiconFileName == null || lexiconFileName.isEmpty())
 			throw new IllegalArgumentException("Lexicon filename cannot be null or empty!");
 	
