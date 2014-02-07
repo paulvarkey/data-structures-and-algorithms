@@ -9,7 +9,7 @@ import java.util.HashSet;
 public abstract class AbstractLexiconGraph implements ILexiconGraph 
 {
 	
-	public void ingestLexicon(String lexiconFileName, boolean overwrite)
+	public void ingestLexicon(String lexiconFileName, boolean overwrite, boolean concurrently)
 	{		
 		if(lexiconFileName == null || lexiconFileName.isEmpty())
 			throw new IllegalArgumentException("Lexicon filename cannot be null or empty!");
@@ -34,9 +34,7 @@ public abstract class AbstractLexiconGraph implements ILexiconGraph
 		
 		long start = System.nanoTime(); 
 		
-		for (String word : words) {
-	        add(word);
-		}
+		addAll(words, concurrently);
 		
 		double elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
 		

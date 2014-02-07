@@ -1,5 +1,7 @@
 package com.pvarkey.datastructures.lexicongraph;
 
+import java.util.Collection;
+
 public class HAMT extends AbstractLexiconGraph implements ILexiconGraph {
 	
 	final static int W = 5;
@@ -9,6 +11,7 @@ public class HAMT extends AbstractLexiconGraph implements ILexiconGraph {
 	int mask = 0;
 	Object[] amt = null;
 	int lexiconSize = 0;
+	final Object locker = new Object();
 	
 	public HAMT(short _indexExtractorCode, short _indexExtractorShift)
 	{
@@ -118,6 +121,41 @@ public class HAMT extends AbstractLexiconGraph implements ILexiconGraph {
 		return amtIndex;
 		// the following from Prokopec, et al. (2011) may be more efficient?
 		// return Integer.bitCount(((1 << (maskIndex + 1)) - 1) & mask) - 1;
+	}
+
+	@Override
+	public void addAll(Collection<String> c, boolean concurrently) {
+		if (concurrently) {
+			for (String word : c) {
+				synchronized(locker) {
+					add(word);
+				}
+			}
+		}
+		else {
+			for (String word : c) {
+		        add(word);
+			}
+		}		
+	}
+
+	@Override
+	public boolean containsAll(Collection<String> c, boolean concurrently) {
+		if (concurrently) {
+			for (String word : c) {
+				synchronized(locker) {
+					if(!contains(word))
+						return false;
+				}
+			}
+		}
+		else {
+			for (String word : c) {
+	    		if (!contains(word))
+	    			return false;
+			}
+		}
+		return true;
 	}
 
 }

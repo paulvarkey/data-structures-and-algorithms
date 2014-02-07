@@ -3,6 +3,13 @@
  */
 package com.pvarkey.datastructures.lexicongraph;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author pvarkey
  *
@@ -25,6 +32,7 @@ public class TernarySearchTree extends AbstractLexiconGraph implements ILexiconG
 	}
 	
 	Node root = null;
+	final Object locker = new Object();
 	int size = 0;
 	
 	private Node add(String s, int pos, Node node)
@@ -106,5 +114,39 @@ public class TernarySearchTree extends AbstractLexiconGraph implements ILexiconG
 		root = null;
 		size = 0;
 	}
-	
+
+	@Override
+	public void addAll(Collection<String> c, boolean concurrently) {
+		if (concurrently) {
+			for (String word : c) {
+				synchronized(locker) {
+					add(word);
+				}
+			}
+		}
+		else {
+			for (String word : c) {
+		        add(word);
+			}
+		}
+	}
+
+	@Override
+	public boolean containsAll(Collection<String> c, boolean concurrently) {
+		if (concurrently) {
+			for (String word : c) {
+				synchronized(locker) {
+					if(!contains(word))
+						return false;
+				}
+			}
+		}
+		else {
+			for (String word : c) {
+	    		if (!contains(word))
+	    			return false;
+			}
+		}
+		return true;
+	}
 }

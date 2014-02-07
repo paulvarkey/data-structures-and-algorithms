@@ -1,6 +1,15 @@
 package com.pvarkey.datastructures.lexicongraph;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import junit.framework.Assert;
@@ -254,6 +263,79 @@ public class CTrie extends AbstractLexiconGraph implements ILexiconGraph {
 		public RequireRestartException(String string) {
 			super(string);
 		}
+	}
+
+	@Override
+	public void addAll(Collection<String> c, boolean concurrently) {
+		if (concurrently) {		
+			ExecutorService exec = Executors.newFixedThreadPool(Math.max(Runtime.getRuntime().availableProcessors() - 2, 1));
+			try {
+				for (final String word : c) {
+			        exec.submit(new Runnable() {
+			            @Override
+			            public void run() {
+			            	add(word);
+			            }
+			        });
+			    }
+			} finally {
+			    exec.shutdown();
+			    while(true) {
+				    try {
+				    	exec.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+				    } catch (InterruptedException e) {
+				    	continue;
+				    }
+				    break;
+			    }
+			}
+		}
+		else {
+			for (String word : c) {
+		        add(word);
+			}
+		}
+	}
+
+	@Override
+	public boolean containsAll(Collection<String> c, boolean concurrently) {
+		if (concurrently) {
+			ExecutorService exec = Executors.newFixedThreadPool(Math.max(Runtime.getRuntime().availableProcessors() - 2, 1));
+			List<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
+			try {
+				for (final String word : c) {
+					results.add(exec.submit(new Callable<Boolean>() {
+			            @Override
+						public Boolean call() throws Exception {
+							if (!contains(word))
+			            		return false;
+							else
+								return true;
+						}
+			        }));
+			    }
+			} finally {
+			    exec.shutdown();
+			    while(true) {
+					for (Future<Boolean> result : results) {
+						try {
+							if (!result.get())
+								return false;
+						} catch (InterruptedException | ExecutionException e) {
+							continue;
+						}
+					}
+					break;
+			    }
+			}
+		}
+		else {
+			for (String word : c) {
+	    		if (!contains(word))
+	    			return false;
+			}
+		}
+		return true;
 	}
 
 }

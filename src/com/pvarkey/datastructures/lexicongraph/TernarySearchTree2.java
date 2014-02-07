@@ -1,5 +1,6 @@
 package com.pvarkey.datastructures.lexicongraph;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class TernarySearchTree2 extends AbstractLexiconGraph
@@ -7,6 +8,7 @@ public class TernarySearchTree2 extends AbstractLexiconGraph
 {
 	
 	HashMap<Integer, Byte> tstArrayAsMap = null;
+	final Object locker = new Object();
 	int size = 0;
 
 	@Override
@@ -133,6 +135,41 @@ public class TernarySearchTree2 extends AbstractLexiconGraph
 	private boolean isWordTerminator(byte maskedChar)
 	{
 		return (maskedChar & (byte) 0x80) >> 7 == -1;
+	}
+
+	@Override
+	public void addAll(Collection<String> c, boolean concurrently) {
+		if (concurrently) {
+			for (String word : c) {
+				synchronized(locker) {
+					add(word);
+				}
+			}
+		}
+		else {
+			for (String word : c) {
+		        add(word);
+			}
+		}
+	}
+
+	@Override
+	public boolean containsAll(Collection<String> c, boolean concurrently) {
+		if (concurrently) {
+			for (String word : c) {
+				synchronized(locker) {
+					if(!contains(word))
+						return false;
+				}
+			}
+		}
+		else {
+			for (String word : c) {
+	    		if (!contains(word))
+	    			return false;
+			}
+		}
+		return true;
 	}
 
 }
