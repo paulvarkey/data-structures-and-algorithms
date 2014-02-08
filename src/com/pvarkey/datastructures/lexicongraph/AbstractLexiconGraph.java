@@ -1,4 +1,7 @@
 /*******************************************************************************
+ * Licensed under the ISC License :
+ * http://en.wikipedia.org/wiki/ISC_license
+ * 
  * Copyright (c) 2014 pvarkey.
  * 
  * Permission to use, copy, modify, and/or distribute this software for
