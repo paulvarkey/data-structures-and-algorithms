@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project>
+	<owner>Paul Varkey</owner>
+	<copyright><![CDATA[Copyright (c) 2014, Paul Varkey
+
+
+Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.]]></copyright>
+	<header contentId="org.eclipse.pde.fragmentManifest" excluded="true" />
+	<header contentId="org.eclipse.pde.pluginProperties" excluded="true" />
+	<header contentId="org.eclipse.pde.productFile" excluded="true" />
+	<header contentId="org.eclipse.jst.j2ee.appclientDD" excluded="true" />
+	<header contentId="org.eclipse.ant.core.antBuildFile" excluded="true" />
+	<header contentId="org.eclipse.pde.simpleCheatSheet" excluded="true" />
+	<header contentId="org.eclipse.core.runtime.xml" postBlankLines="0" lineFormat="false" preserveFirstLine="true">
+		<beginLine><![CDATA[<!--]]></beginLine>
+		<linePrefix><![CDATA[  ]]></linePrefix>
+		<endLine><![CDATA[-->]]></endLine>
+		<firstLinePattern><![CDATA[<\?xml version=.*\?>]]></firstLinePattern>
+	</header>
+	<header contentId="org.eclipse.jst.j2ee.webDD" excluded="true" />
+	<header contentId="org.eclipse.pde.compositeCheatSheet" excluded="true" />
+	<header contentId="org.eclipse.pde.schema" excluded="true" />
+	<header contentId="org.eclipse.jst.j2ee.earDD" excluded="true" />
+	<header contentId="org.eclipse.pde.tocFile" excluded="true" />
+	<header contentId="org.eclipse.pde.ctxHelpFile" excluded="true" />
+	<header contentId="org.eclipse.pde.categoryManifest" excluded="true" />
+	<header contentId="org.eclipse.jdt.core.JARManifest" excluded="true" />
+	<header contentId="org.eclipse.pde.buildProperties" excluded="true" />
+	<header contentId="org.eclipse.ui.views.log.log" excluded="true" />
+	<header contentId="org.eclipse.pde.siteManifest" excluded="true" />
+	<header contentId="org.eclipse.pde.bundleManifest" excluded="true" />
+	<header contentId="org.eclipse.pde.targetFile" excluded="true" />
+	<header contentId="org.eclipse.jst.j2ee.connectorDD" excluded="true" />
+	<header contentId="org.eclipse.pde.pluginManifest" excluded="true" />
+	<header contentId="org.eclipse.core.runtime.text" postBlankLines="0" lineFormat="true" preserveFirstLine="false">
+		<beginLine><![CDATA[#-------------------------------------------------------------------------------]]></beginLine>
+		<linePrefix><![CDATA[# ]]></linePrefix>
+		<endLine><![CDATA[#-------------------------------------------------------------------------------]]></endLine>
+	</header>
+	<header contentId="org.eclipse.jst.j2ee.ejbDD" excluded="true" />
+	<header contentId="org.eclipse.pde.featureManifest" excluded="true" />
+	<header contentId="org.eclipse.jdt.core.javaSource" postBlankLines="0" lineFormat="false" preserveFirstLine="false">
+		<beginLine><![CDATA[/*******************************************************************************]]></beginLine>
+		<linePrefix><![CDATA[ * ]]></linePrefix>
+		<endLine><![CDATA[ ******************************************************************************/]]></endLine>
+	</header>
+</project>
