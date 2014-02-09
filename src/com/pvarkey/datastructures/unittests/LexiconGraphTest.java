@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -55,8 +56,39 @@ public class LexiconGraphTest {
 	static String[] wordsNotInLexicon = {"KJAJKDBJKSDBDJHAJDASJDBHA"};
 	
 	@BeforeClass 
-	public static void initializeTestParametersHere() {
-
+	public static void baseline() {
+		Set<String> lexiconAsHashSet = new HashSet<>(178691);
+		try(BufferedReader br = new BufferedReader(new FileReader(lexiconFileName))) {
+			br.readLine(); // skip first line -- it contains the count of the number of words
+		    for(String line; (line = br.readLine()) != null; ) {
+		    	lexiconAsHashSet.add(line.trim());
+		    }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		long start = System.nanoTime();
+		Set<String> lexiconAsHashSet2 = new HashSet<>(178691);
+		for(String word : lexiconAsHashSet) {
+			lexiconAsHashSet2.add(word);
+		}
+		double elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
+		System.out.println(lexiconAsHashSet2.getClass().getSimpleName() + " took "  + elapsedTimeInSec + " seconds to ingest  " + "lexicon entries.");
+		
+		// collect Nth words
+		Set<String> NthWords = new HashSet<String>(178691/Nth + 1);
+		int i = 0;
+		for (String word : lexiconAsHashSet) {
+			if((i++)%Nth == 0) {
+				NthWords.add(word);
+			}
+		}
+		
+		start = System.nanoTime();
+		for (String word : NthWords) {
+			assertTrue(lexiconAsHashSet2.contains(word));
+		}
+		elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
+		System.out.println(lexiconAsHashSet2.getClass().getSimpleName() + " took "  + elapsedTimeInSec + " seconds for " + Nth + "th word containment test from lexicon.");
 	}
 
 	@Test
@@ -173,7 +205,7 @@ public class LexiconGraphTest {
 		// first, ingest lexicon
 		concreteLexiconGraph.ingestLexicon(lexiconFileName, true, concurrently);
 		
-		HashSet<String> NthWords = new HashSet<String>(10000);
+		HashSet<String> NthWords = new HashSet<String>(178691/N + 1);
 		
 		try(BufferedReader br = new BufferedReader(new FileReader(lexicon))) {
 			br.readLine(); // skip first line -- it contains the count of the number of words

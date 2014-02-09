@@ -41,7 +41,7 @@ public abstract class AbstractLexiconGraph implements ILexiconGraph
 		if (overwrite)
 			destroy();
 		
-		HashSet<String> words = new HashSet<String>(10000);
+		HashSet<String> words = new HashSet<String>(178691);
 		
 		try(BufferedReader br = new BufferedReader(new FileReader(lexicon))) {
 			br.readLine(); // skip first line -- it contains the count of the number of words

@@ -21,6 +21,7 @@
 package com.pvarkey.datastructures.lexicongraph;
 
 import java.util.Collection;
+import java.util.Set;
 
 
 public interface ILexiconGraph {
