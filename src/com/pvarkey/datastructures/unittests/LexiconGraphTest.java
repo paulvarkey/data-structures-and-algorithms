@@ -29,8 +29,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -50,34 +53,45 @@ import com.pvarkey.datastructures.lexicongraph.TernarySearchTree2;
  */
 public class LexiconGraphTest {
 	
-	static int Nth = 13;
+	static int Nth = 17;
 	static String lexiconFileName = "data/Word-List.txt";
 	static String[] wordsInLexicon = {"AARDVARK", "REDEFINES"};
 	static String[] wordsNotInLexicon = {"KJAJKDBJKSDBDJHAJDASJDBHA"};
 	
 	@BeforeClass 
 	public static void baseline() {
-		Set<String> lexiconAsHashSet = new HashSet<>(178691);
+		Set<String> lexiconReadBuffer = new HashSet<>(178691);
 		try(BufferedReader br = new BufferedReader(new FileReader(lexiconFileName))) {
 			br.readLine(); // skip first line -- it contains the count of the number of words
 		    for(String line; (line = br.readLine()) != null; ) {
-		    	lexiconAsHashSet.add(line.trim());
+		    	lexiconReadBuffer.add(line.trim());
 		    }
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		Set<String> lexiconAsHashSet = new HashSet<String>(178691);
+		baseline(lexiconReadBuffer, lexiconAsHashSet);
+		
+		Set<String> synchronizedlexiconAsHashSet = Collections.synchronizedSet(new HashSet<String>(178691));
+		baseline(lexiconReadBuffer, synchronizedlexiconAsHashSet);
+		
+		Set<String> lexiconAsSetFromConcurrentHashMap = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+		baseline(lexiconReadBuffer, lexiconAsSetFromConcurrentHashMap);
+	}
+	
+	private static <T extends Set<String>> void baseline(Set<String> lexiconReadBuffer, T lexiconAsCollection) {	
 		long start = System.nanoTime();
-		Set<String> lexiconAsHashSet2 = new HashSet<>(178691);
-		for(String word : lexiconAsHashSet) {
-			lexiconAsHashSet2.add(word);
+		for(String word : lexiconReadBuffer) {
+			lexiconAsCollection.add(word);
 		}
 		double elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
-		System.out.println(lexiconAsHashSet2.getClass().getSimpleName() + " took "  + elapsedTimeInSec + " seconds to ingest  " + "lexicon entries.");
+		System.out.println(lexiconAsCollection.getClass().getSimpleName() + " took "  + elapsedTimeInSec + " seconds to ingest  " + "lexicon entries.");
 		
 		// collect Nth words
 		Set<String> NthWords = new HashSet<String>(178691/Nth + 1);
 		int i = 0;
-		for (String word : lexiconAsHashSet) {
+		for (String word : lexiconReadBuffer) {
 			if((i++)%Nth == 0) {
 				NthWords.add(word);
 			}
@@ -85,10 +99,10 @@ public class LexiconGraphTest {
 		
 		start = System.nanoTime();
 		for (String word : NthWords) {
-			assertTrue(lexiconAsHashSet2.contains(word));
+			assertTrue(lexiconAsCollection.contains(word));
 		}
 		elapsedTimeInSec = (System.nanoTime() - start) * 1.0e-9;
-		System.out.println(lexiconAsHashSet2.getClass().getSimpleName() + " took "  + elapsedTimeInSec + " seconds for " + Nth + "th word containment test from lexicon.");
+		System.out.println(lexiconAsCollection.getClass().getSimpleName() + " took "  + elapsedTimeInSec + " seconds for " + Nth + "th word containment test from lexicon.");
 	}
 
 	@Test

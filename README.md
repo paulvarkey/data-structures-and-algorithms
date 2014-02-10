@@ -23,6 +23,7 @@ Time/space characteristics for complete ingestion of a sample lexicon containing
 | [Hash Array Mapped Trie](https://en.wikipedia.org/wiki/Hash_array_mapped_trie) | 0.18 | 0.15 | 13.4 MB |
 | [CTrie](https://en.wikipedia.org/wiki/Ctrie) (Concurrent Hash Trie)<sup>a</sup> | 0.11<sup>b</sup> | 0.09<sup>b</sup> | 19 MB |
 | HashSet |  | 0.03 | 16 MB |
+| Collections.synchronizedSet(HashSet) OR Collections.newSetFromMap(ConcurrentHashMap) | | 0.06 | 
 
 Running time for Nth word containment test from the same lexicon (after ingestion) :
 
@@ -33,6 +34,7 @@ Running time for Nth word containment test from the same lexicon (after ingestio
 | Hash Array Mapped Trie | 0.02 |
 | CTrie | 0.01<sup>b</sup> |
 | HashSet | 0.006 |
+| Collections.synchronizedSet(HashSet) OR Collections.newSetFromMap(ConcurrentHashMap) | 0.005 |
 ___
 <sup>a</sup> CTries are concurrent, lock-free versions of Hash Array Mapped Tries.  
 <sup>b</sup> Ingestion was performed sequentially (i.e. no concurrency was used)
